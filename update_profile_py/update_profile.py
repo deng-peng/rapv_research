@@ -1,3 +1,4 @@
+import random
 import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -58,7 +59,7 @@ time.sleep(3)
 driver.find_element_by_css_selector('.recommended-section-experience > .recommended-section-add').click()
 time.sleep(1)
 # company name
-driver.find_element_by_css_selector('#companyName-positionCompany-position-editPositionForm').send_keys('contact master')
+driver.find_element_by_css_selector('#companyName-positionCompany-position-editPositionForm').send_keys('contact fun')
 time.sleep(1)
 # title
 driver.find_element_by_css_selector('#title-position-editPositionForm').send_keys('manager')
@@ -70,3 +71,11 @@ driver.find_element_by_css_selector('#year-startDate-position-editPositionForm')
 driver.find_element_by_css_selector('#year-startDate-position-editPositionForm').send_keys('2012')
 driver.find_element_by_css_selector('#isCurrent-endDate-position-editPositionForm').click()
 driver.find_element_by_css_selector('form[name=editPositionForm] > p > input').click()
+
+# change photo
+driver.find_element_by_css_selector('.edit-photo-content').click()
+time.sleep(3)
+photo_path = random.choice(account.photo)
+driver.find_element_by_css_selector('.photo-uploader form > input[type="file"]').send_keys(photo_path)
+time.sleep(3)
+driver.find_element_by_css_selector('button.save').click()
