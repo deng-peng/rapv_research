@@ -3,7 +3,7 @@ import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
-from get_token_py import account
+import account
 
 service_args = [
     # '--proxy=127.0.0.1:1080',
@@ -24,4 +24,5 @@ time.sleep(3)
 
 driver.get('http://rapportive.jelzo.com/token.html')
 token = driver.execute_script('return IN.ENV.auth.oauth_token')
+# IN.ENV.auth.oauth_expires_in => 1800
 print token
