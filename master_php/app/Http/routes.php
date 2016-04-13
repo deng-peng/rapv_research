@@ -15,6 +15,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('people','TaskController@getTask');
-Route::get('token','TaskController@getToken');
+Route::get('task','TaskController@getTask');
+Route::get('account','TaskController@getAccount');
 Route::post('result','TaskController@postResult');
