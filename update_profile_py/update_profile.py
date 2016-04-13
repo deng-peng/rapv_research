@@ -9,11 +9,17 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 
 import account
+import read_profile_data
 
 
 class LinkedinProfile:
     def __init__(self):
-        self.driver = webdriver.Chrome()
+        service_args = [
+            # '--proxy=127.0.0.1:1080',
+            # '--proxy-type=socks5',
+        ]
+        self.driver = webdriver.Chrome(service_args=service_args)
+        self.profile = None
 
     def login(self):
         self.driver.get('https://www.linkedin.com/uas/login')
@@ -26,39 +32,46 @@ class LinkedinProfile:
         time.sleep(3)
 
     def load_profile(self):
-        pass
+        maker = read_profile_data.ProfileMaker()
+        self.profile = maker.make()
 
     def set_profile(self):
         # profiel
         self.driver.get('http://www.linkedin.com/profile/edit?trk=hp-identity-edit-profile')
+        time.sleep(3)
         # name
         self.driver.find_element_by_css_selector('#name > h1 > button').click()
         time.sleep(1)
         self.driver.find_element_by_css_selector('#firstName-editNameForm').clear()
-        self.driver.find_element_by_css_selector('#firstName-editNameForm').send_keys('Steve')
+        self.driver.find_element_by_css_selector('#firstName-editNameForm').send_keys(self.profile.given_name)
         time.sleep(1)
         self.driver.find_element_by_css_selector('#lastName-editNameForm').clear()
-        self.driver.find_element_by_css_selector('#lastName-editNameForm').send_keys('Dickens')
+        self.driver.find_element_by_css_selector('#lastName-editNameForm').send_keys(self.profile.family_name)
         time.sleep(1)
         self.driver.find_element_by_css_selector('#name-edit > p > input').click()
         time.sleep(5)
 
         # headline
-        # self.driver.find_element_by_css_selector('#headline > div.field > button').click()
-        # self.driver.find_element_by_css_selector('#headline-editHeadlineForm').click()
-        # self.driver.find_element_by_css_selector('#headline-edit > p.actions > input').click()
+        self.driver.find_element_by_css_selector('#headline > div.field > button').click()
+        self.driver.find_element_by_css_selector('#headline-editHeadlineForm').clear()
+        self.driver.find_element_by_css_selector('#headline-editHeadlineForm').send_keys(
+            '{0} at {1}'.format(self.profile.title, self.profile.organization))
+        self.driver.find_element_by_css_selector('#headline-edit > p.actions > input').click()
+        time.sleep(3)
 
         # country
         self.driver.find_element_by_css_selector('#location > div.field > button').click()
         time.sleep(1)
         select = Select(self.driver.find_element_by_css_selector('#countryCode-location-editLocationForm'))
         select.select_by_visible_text("Australia")
+        # select.select_by_visible_text("United States")
         time.sleep(1)
         self.driver.find_element_by_css_selector('#postalCode-location-editLocationForm').clear()
         self.driver.find_element_by_css_selector('#postalCode-location-editLocationForm').send_keys('2000')
+        # self.driver.find_element_by_css_selector('#postalCode-location-editLocationForm').send_keys('10000')
         time.sleep(1)
         select = Select(self.driver.find_element_by_css_selector('#industryChooser-editLocationForm'))
-        select.select_by_visible_text("Internet")
+        select.select_by_visible_text(self.profile.industry)
         time.sleep(1)
         self.driver.find_element_by_css_selector('form[name=editLocationForm] > p > input').click()
         time.sleep(3)
@@ -76,8 +89,8 @@ class LinkedinProfile:
             self.driver.find_element_by_css_selector('button.save').click()
         except NoSuchElementException, ne:
             print ne
-            if len(self.driver.find_elements_by_css_selector('button.cancel')) > 0:
-                self.driver.find_element_by_css_selector('button.cancel').click()
+        if len(self.driver.find_elements_by_css_selector('button.cancel')) > 0:
+            self.driver.find_element_by_css_selector('button.cancel').click()
 
     def set_experience(self):
         if len(self.driver.find_elements_by_css_selector(
@@ -91,16 +104,19 @@ class LinkedinProfile:
         time.sleep(1)
         # company name
         self.driver.find_element_by_css_selector('#companyName-positionCompany-position-editPositionForm').send_keys(
-            'contact fun')
+            self.profile.organization)
         time.sleep(1)
         # title
-        self.driver.find_element_by_css_selector('#title-position-editPositionForm').send_keys('manager')
+        self.driver.find_element_by_css_selector('#title-position-editPositionForm').send_keys(self.profile.title)
         # time period
         select = Select(self.driver.find_element_by_css_selector('#month-startDate-position-editPositionForm'))
-        select.select_by_visible_text("May")
+        select.select_by_visible_text(self.profile.start_month)
         self.driver.find_element_by_css_selector('#year-startDate-position-editPositionForm').clear()
-        self.driver.find_element_by_css_selector('#year-startDate-position-editPositionForm').send_keys('2012')
+        self.driver.find_element_by_css_selector('#year-startDate-position-editPositionForm').send_keys(
+            self.profile.start_year)
         self.driver.find_element_by_css_selector('#isCurrent-endDate-position-editPositionForm').click()
+        self.driver.find_element_by_css_selector('#summary-position-editPositionForm').send_keys(
+            self.profile.description)
         self.driver.find_element_by_css_selector('form[name=editPositionForm] > p > input').click()
 
     def save_screen(self):
