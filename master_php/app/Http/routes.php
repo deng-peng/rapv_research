@@ -6,15 +6,15 @@
 |--------------------------------------------------------------------------
 |
 | Here is where you can register all of the routes for an application.
-| It is a breeze. Simply tell Lumen the URIs it should respond to
-| and give it the Closure to call when that URI is requested.
+| It's a breeze. Simply tell Laravel the URIs it should respond to
+| and give it the controller to call when that URI is requested.
 |
 */
 
-$app->get('/', function () use ($app) {
-    return $app->version();
+Route::get('/', function () {
+    return view('welcome');
 });
 
-$app->get('task', 'Controller@getTasks');
-$app->get('token', 'Controller@getToken');
-$app->post('result', 'Controller@saveResults');
+Route::get('people','TaskController@getTask');
+Route::get('token','TaskController@getToken');
+Route::post('result','TaskController@postResult');
