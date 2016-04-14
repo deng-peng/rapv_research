@@ -15,8 +15,8 @@ class CreatePeopleTable extends Migration
         Schema::create('people', function (Blueprint $table) {
             $table->increments('id');
             $table->string('email');
-            $table->boolean('working')->default(false);
-            $table->tinyInteger('status')->nullable();
+            $table->string('working', 64);
+            $table->mediumInteger('status')->nullable();
             $table->mediumInteger('error_code')->nullable();
             $table->string('message');
             $table->string('profile_url');

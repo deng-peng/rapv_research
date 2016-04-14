@@ -4,18 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Account;
 use App\Person;
-use DB;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
 class TaskController extends Controller
 {
-    function getTask()
+    function getTask(Request $request)
     {
-        $people = Person::where('working', false)->where('status', Null)->limit(3)->pluck('email');
-        Person::whereIn('email', $people)->update(['working' => true]);
-        return response()->json($people);
+        $seq = $request->ip() . ' - ' . str_random(10);
+        $people = Person::where('working', '')->where('status', Null)->limit(3)->pluck('email');
+        Person::whereIn('email', $people)->update(['working' => $seq]);
+        return response()->json([$seq => $people]);
     }
 
     function getAccount()
@@ -31,5 +31,21 @@ class TaskController extends Controller
 
     function postResult(Request $request)
     {
+        $result = $request->input('result');
+        $arr = json_decode($result, true);
+        foreach ($arr as $key => $value) {
+            $person = Person::whereEmail($key)->first();
+            if ($person) {
+                if (key_exists('errorCode', $value)) {
+                    $person->error_code = $value['errorCode'];
+                    $person->status = $value['status'];
+                    $person->message = $value['message'];
+                } else if (key_exists('publicProfileUrl', $value)) {
+                    $person->profile_url = $value['publicProfileUrl'];
+                }
+                $person->working = '';
+                $person->save();
+            }
+        }
     }
 }

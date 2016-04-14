@@ -14,7 +14,6 @@
 $factory->define(App\Person::class, function ($faker) {
     return [
         'email'      => $faker->email,
-        'working'    => false,
         'status'     => Null,
         'error_code' => Null,
     ];
