@@ -14,13 +14,12 @@
 $factory->define(App\Person::class, function ($faker) {
     return [
         'email'      => $faker->email,
-        'status'     => Null,
-        'error_code' => Null,
+        'status'     => 0,
     ];
 });
 $factory->define(App\Account::class, function ($faker) {
     return [
-        'account'  => $faker->userName,
+        'email'  => $faker->email,
         'password' => $faker->password,
         'status'   => Null,
         'token'    => '',

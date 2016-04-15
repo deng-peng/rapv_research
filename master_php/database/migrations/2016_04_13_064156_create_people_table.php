@@ -16,8 +16,7 @@ class CreatePeopleTable extends Migration
             $table->increments('id');
             $table->string('email');
             $table->string('working', 64);
-            $table->mediumInteger('status')->nullable();
-            $table->mediumInteger('error_code')->nullable();
+            $table->mediumInteger('status')->default(0);
             $table->string('message');
             $table->string('profile_url');
         });

@@ -11,6 +11,6 @@ class TokensTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Account::class, 5)->create();
+        factory(App\Account::class, 1)->create();
     }
 }

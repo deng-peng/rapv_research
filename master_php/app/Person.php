@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $email
  * @property boolean $working
  * @property boolean $status
- * @property integer $error_code
  * @property string $message
  * @property string $profile_url
  * @method static \Illuminate\Database\Query\Builder|\App\Person whereId($value)
