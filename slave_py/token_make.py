@@ -1,6 +1,4 @@
-import time
-from slave_py.config import master_url
-import requests
+from __init__ import *
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 

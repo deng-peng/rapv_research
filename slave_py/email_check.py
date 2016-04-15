@@ -1,8 +1,4 @@
-import requests
-import random
-
-import time
-
+from __init__ import *
 from slave_py.token_make import TokenMake
 
 
@@ -40,13 +36,14 @@ class EmailCheck(object):
             'x-http-method-override': 'GET',
             'x-cross-domain-origin': 'https://mail.google.com',
             'content-type': 'application/json',
-            'user-agent': self.make_user_agent(),
+            'user-agent': self.__make_user_agent(),
             'oauth_token': self.get_token()
         }
+        print 'current token : ' + self.token
         return header
 
     @staticmethod
-    def make_user_agent():
+    def __make_user_agent():
         return random.choice([
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36',
 

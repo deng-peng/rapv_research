@@ -1,5 +1,4 @@
-import requests
-import json
+from __init__ import *
 
 results = {
     u'Price.Buford@yahoo.com': {u'errorCode': 0, u'status': 403,

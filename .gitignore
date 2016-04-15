@@ -12,3 +12,4 @@ gen
 account.py
 update_profile_py/profile_data.txt
 
+*.log
