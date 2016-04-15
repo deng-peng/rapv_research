@@ -8,15 +8,12 @@ headers = {'x-requested-with': 'IN.XDCall',
            'x-http-method-override': 'GET',
            'x-cross-domain-origin': 'https://mail.google.com',
            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36',
-           'oauth_token': '58hWTzXKK9iaL9wReP7RP4ZPYOjbdgKv8BH2',
+           'oauth_token': 'wzuUTOWjjIX4I5gEUqnttFpHe-123455D8zb',
            'content-type': 'application/json'
            }
 # 15:15
 email_list = [
     'donella.davidson@citi.com',
-    'maria_campos@live.com.au',
-    'mthom@doh.health.nsw.gov.au',
-    'lozleo@hotmail.com',
 ]
 count = 1
 for email in email_list:
