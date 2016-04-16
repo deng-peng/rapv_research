@@ -13,3 +13,4 @@ account.py
 update_profile_py/profile_data.txt
 
 *.log
+import_email_py/email.txt
