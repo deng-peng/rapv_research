@@ -20,5 +20,5 @@ f = codecs.open('email.txt', 'r', encoding='utf-8')
 for line in f.readlines():
     count += 1
     print count
-    p = People(email=line, working='', message='', profile_url='')
-    p.save()
+    with db.atomic():
+        People.create(email=line.strip(), working='', message='', profile_url='')

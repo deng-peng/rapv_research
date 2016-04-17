@@ -14,7 +14,7 @@ class TaskController extends Controller
     function getTask(Request $request)
     {
         $seq = $request->ip() . ' - ' . str_random(10);
-        $people = Person::where('working', '')->where('status', 0)->limit(1)->pluck('email');
+        $people = Person::where('working', '')->where('status', 0)->limit(10)->pluck('email');
         Person::whereIn('email', $people)->update(['working' => $seq]);
         return response()->json([$seq => $people]);
     }

@@ -22,7 +22,7 @@ while True:
         if res:
             results[address] = res
         else:
-            results[address] = ''
+            results[address] = []
         count += 1
         print 'check count : {0}'.format(count)
     payload = json.dumps(results)
@@ -32,4 +32,4 @@ while True:
         email_checker.set_account_status('active')
         break
     else:
-        time.sleep(5)
+        time.sleep(3)
