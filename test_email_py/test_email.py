@@ -8,12 +8,13 @@ headers = {'x-requested-with': 'IN.XDCall',
            'x-http-method-override': 'GET',
            'x-cross-domain-origin': 'https://mail.google.com',
            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36',
-           'oauth_token': 'wzuUTOWjjIX4I5gEUqnttFpHe-123455D8zb',
+           'oauth_token': '8adnagGZX0pXvpEHX1Ivp1Uh0DRNAFEPXO_a',
            'content-type': 'application/json'
            }
 # 15:15
 email_list = [
-    'donella.davidson@citi.com',
+    'richard.seath@hotmail.com',
+
 ]
 count = 1
 for email in email_list:
@@ -25,8 +26,12 @@ for email in email_list:
         print js
         if 'errorCode' in js:
             print '{0} : {1}'.format(email, js['status'])
-        elif 'publicProfileUrl' in js:
-            print '{0} : {1}'.format(email, js['publicProfileUrl'])
+        else:
+            if 'publicProfileUrl' in js:
+                print '{0} : {1}'.format(email, js['publicProfileUrl'])
+            elif 'siteStandardProfileRequest' in js:
+                print js['siteStandardProfileRequest']['url']
+
     except Exception, e:
         print(e)
         print(email)
