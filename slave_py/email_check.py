@@ -32,6 +32,11 @@ class EmailCheck(object):
                         return res
             elif 'publicProfileUrl' in js:
                 res['publicProfileUrl'] = js['publicProfileUrl']
+                res['status'] = 200
+                return res
+            elif 'siteStandardProfileRequest' in js:
+                res['publicProfileUrl'] = js['siteStandardProfileRequest']['url']
+                res['status'] = 201
                 return res
             else:
                 return False

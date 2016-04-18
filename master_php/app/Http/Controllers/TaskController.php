@@ -42,7 +42,7 @@ class TaskController extends Controller
                     $person->message = $value['message'];
                 } else if (key_exists('publicProfileUrl', $value)) {
                     $person->profile_url = $value['publicProfileUrl'];
-                    $person->status = 200;
+                    $person->status = $value['status'];
                 }
                 $person->working = '';
                 $person->save();
