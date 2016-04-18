@@ -1,4 +1,4 @@
-from __init__ import *
+from slave_py import *
 
 results = {
     u'Price.Buford@yahoo.com': {u'errorCode': 0, u'status': 403,
