@@ -22,6 +22,7 @@ class TaskController extends Controller
     function getAccount()
     {
         $account = Account::where('status', Null)->orWhere('status', config('token_status.active'))->orderBy('updated_at')->first();
+        $account->save();
         if ($account) {
             $account->status = config('token_status.in_use');
             $account->save();
@@ -60,7 +61,9 @@ class TaskController extends Controller
                 $account->status = config('token_status.active');
             } elseif ($status == 'frozen') {
                 $account->status = config('token_status.frozen');
+            } elseif ($status == 'in_use') {
             }
+            $account->token = $request->input('token');
             $account->save();
         }
     }

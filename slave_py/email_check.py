@@ -25,6 +25,9 @@ class EmailCheck(object):
                         # u'errorCode': 0, u'status': 500, u'message': u'Internal service error'
                         self.get_token(True)
                         return False
+                    elif js['status'] == 403 and 'Throttle limit' in js['message']:
+                        self.get_token(True)
+                        return False
                     else:
                         res['errorCode'] = js['errorCode']
                         res['status'] = js['status']
@@ -57,7 +60,9 @@ class EmailCheck(object):
         return header
 
     def get_token(self, force=False):
-        if not force:
+        if force:
+            self.set_account_status('frozen')
+        else:
             if self.token != '' and self.token_expire > time.time():
                 return self.token
         maker = TokenMake()
@@ -67,8 +72,8 @@ class EmailCheck(object):
         print 'token changed : ' + self.token
         return self.token
 
-    def set_account_status(self, status):
-        requests.post(master_url + '/account', data={'account': self.account, 'status': status})
+    def set_account_status(self, status, token=''):
+        requests.post(master_url + '/account', data={'account': self.account, 'status': status, 'token': token})
 
     @staticmethod
     def __make_user_agent():

@@ -26,7 +26,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function () {
-            DB::update('update accounts set status = 3 where status = 1 and updated_at + 1800 * 1000 < NOW()');
+            //active accounts after sleep 6 hours
+            DB::update('update accounts set status = 3 where status = -1 and updated_at + INTERVAL 6 HOUR < NOW()');
+
         })->everyTenMinutes();
     }
 }

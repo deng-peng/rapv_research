@@ -24,6 +24,9 @@ while True:
         else:
             results[address] = []
         count += 1
+        # report status
+        if count % 1000 == 0:
+            email_checker.set_account_status('in_use', email_checker.token)
         print 'check count : {0}'.format(count)
     payload = json.dumps(results)
     r = requests.post(master_url + '/result', data={'result': payload})
