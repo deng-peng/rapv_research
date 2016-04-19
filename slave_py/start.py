@@ -1,6 +1,10 @@
 from __init__ import *
 from email_check import EmailCheck
 
+# start http server
+import subprocess
+p = subprocess.Popen('python -m SimpleHTTPServer 8080', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
 email_checker = EmailCheck()
 count = 0
 while True:

@@ -35,4 +35,4 @@ class TokenMake(object):
             js = r.json()
             self.account = js['account']
             self.password = js['password']
-            print 'current account : {0}'.format(self.account)
+            print 'account changed : {0}'.format(self.account)
