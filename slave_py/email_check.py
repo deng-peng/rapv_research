@@ -1,5 +1,5 @@
 from __init__ import *
-from slave_py.token_make import TokenMake
+from token_make import TokenMake
 
 
 class EmailCheck(object):

@@ -10,7 +10,7 @@ class TokenMake(object):
         self.get_account()
 
     def make(self):
-        driver = webdriver.PhantomJS()
+        driver = webdriver.PhantomJS(service_args=['--ssl-protocol=any'])
         driver.get('https://www.linkedin.com/uas/login?fromSignIn=true&trk=uno-reg-guest-home')
 
         # login user
@@ -21,7 +21,7 @@ class TokenMake(object):
         password.send_keys(Keys.RETURN)
         time.sleep(3)
 
-        driver.get('http://rapportive.jelzo.com/token.html')
+        driver.get('http://rapportive.jelzo.com:8080/token.html')
         token = driver.execute_script('return IN.ENV.auth.oauth_token')
         return token
 
@@ -35,3 +35,4 @@ class TokenMake(object):
             js = r.json()
             self.account = js['account']
             self.password = js['password']
+            print 'current account : {0}'.format(self.account)

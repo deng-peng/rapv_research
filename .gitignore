@@ -14,3 +14,4 @@ update_profile_py/profile_data.txt
 
 *.log
 import_email_py/email.txt
+slave_py/token.html

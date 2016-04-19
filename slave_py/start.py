@@ -1,5 +1,5 @@
 from __init__ import *
-from slave_py.email_check import EmailCheck
+from email_check import EmailCheck
 
 email_checker = EmailCheck()
 count = 0
@@ -24,6 +24,8 @@ while True:
         else:
             results[address] = []
         count += 1
+        if count % 8 == 0:
+            time.sleep(1)
         # report status
         if count % 1000 == 0:
             email_checker.set_account_status('in_use', email_checker.token)
