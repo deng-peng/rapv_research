@@ -21,18 +21,18 @@ while True:
     header_for_batch = email_checker.make_header()
     results = {}
     for address in emails:
+        # report status
+        if count % 1000 == 0:
+            email_checker.set_account_status('in_use', email_checker.token)
+        count += 1
         res = email_checker.check(address, header_for_batch)
         print res
         if res:
             results[address] = res
         else:
             results[address] = []
-        count += 1
         if count % 8 == 0:
             time.sleep(1)
-        # report status
-        if count % 1000 == 0:
-            email_checker.set_account_status('in_use', email_checker.token)
         print 'check count : {0}'.format(count)
     payload = json.dumps(results)
     r = requests.post(master_url + '/result', data={'result': payload})
