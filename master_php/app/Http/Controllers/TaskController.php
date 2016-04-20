@@ -64,6 +64,11 @@ class TaskController extends Controller
             }
             $account->token = $request->input('token');
             $account->save();
+        } else {
+            $account = new Account();
+            $account->email = trim($request->input('account'));
+            $account->password = trim($request->input('password', env('LINKEDIN_PASSWORD')));
+            $account->save();
         }
     }
 }
