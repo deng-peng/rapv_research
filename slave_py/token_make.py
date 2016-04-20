@@ -10,6 +10,14 @@ class TokenMake(object):
         self.get_account()
 
     def make(self):
+        headers = {
+            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'accept-encoding': 'gzip, deflate, sdch',
+            'referer': 'http://www.linkedin.com/',
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36'
+        }
+        for key, value in enumerate(headers):
+            webdriver.DesiredCapabilities.PHANTOMJS['phantomjs.page.customHeaders.{}'.format(key)] = value
         driver = webdriver.PhantomJS(service_args=['--ssl-protocol=any'])
         driver.get('https://www.linkedin.com/uas/login?fromSignIn=true&trk=uno-reg-guest-home')
 
@@ -20,6 +28,7 @@ class TokenMake(object):
         password.send_keys(self.password)
         password.send_keys(Keys.RETURN)
         time.sleep(3)
+        driver.save_screenshot('{0}-{1}.png'.format(self.account, time.time()))
 
         driver.get('http://rapportive.jelzo.com:8080/token.html')
         token = driver.execute_script('return IN.ENV.auth.oauth_token')
