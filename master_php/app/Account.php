@@ -23,6 +23,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\App\Account whereCreatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Account whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string $best_ip
+ * @property integer $level
+ * @method static \Illuminate\Database\Query\Builder|\App\Account whereBestIp($value)
+ * @method static \Illuminate\Database\Query\Builder|\App\Account whereLevel($value)
  */
 class Account extends Model
 {

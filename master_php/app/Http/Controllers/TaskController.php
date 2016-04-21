@@ -13,19 +13,32 @@ class TaskController extends Controller
 {
     function getTask(Request $request)
     {
-        $seq = $request->ip() . ' - ' . str_random(10);
-        $people = Person::where('working', '')->where('status', 0)->limit(10)->pluck('email');
+        $seq = $request->ip() . ' - ' . date("Y-m-d h:i:sa");
+        $level = $request->input('level', 0);
+        if ($level > 0) {
+            $people = Person::where('working', '')->where('status', 403)->limit(10)->pluck('email');
+        } else {
+            $people = Person::where('working', '')->where('status', 0)->limit(10)->pluck('email');
+        }
         Person::whereIn('email', $people)->update(['working' => $seq]);
         return response()->json([$seq => $people]);
     }
 
-    function getAccount()
+    function getAccount(Request $request)
     {
-        $account = Account::where('status', Null)->orWhere('status', config('token_status.active'))->orderBy('updated_at')->first();
+        $query = Account::where('status', Null)->orWhere('status', config('token_status.active'));
+        $account = $query->where('best_ip', $request->ip())->orderBy('updated_at')->first();
+        if (!$account) {
+            $account = $query->orderBy('updated_at')->first();
+        }
         if ($account) {
             $account->status = config('token_status.in_use');
             $account->save();
-            return response()->json(['account' => $account->email, 'password' => $account->password]);
+            return response()->json([
+                'account'  => $account->email,
+                'password' => $account->password,
+                'level'    => $account->level
+            ]);
         }
         return '';
     }
@@ -68,6 +81,8 @@ class TaskController extends Controller
             $account = new Account();
             $account->email = trim($request->input('account'));
             $account->password = trim($request->input('password', env('LINKEDIN_PASSWORD')));
+            $account->best_ip = $request->ip();
+            $account->level = 0;
             $account->save();
         }
     }
