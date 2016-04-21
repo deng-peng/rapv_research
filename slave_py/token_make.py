@@ -39,7 +39,7 @@ class TokenMake(object):
         if r.text == '':
             print 'no active account exist, retry in 60 seconds'
             time.sleep(60)
-            self.get_account()
+            return self.get_account()
         else:
             js = r.json()
             self.account = js['account']

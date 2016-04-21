@@ -19,14 +19,14 @@ class EmailCheck(object):
                 if js['errorCode'] == 0:
                     if js['status'] == 401:
                         # u'errorCode': 0, u'status': 401, u'message': u'[unauthorized]. token expired 4803 seconds ago'
-                        self.get_token(True)
+                        header['oauth_token'] = self.get_token(True)
                         return False
                     elif js['status'] == 500:
                         # u'errorCode': 0, u'status': 500, u'message': u'Internal service error'
-                        self.get_token(True)
+                        header['oauth_token'] = self.get_token(True)
                         return False
                     elif js['status'] == 403 and 'Throttle limit' in js['message']:
-                        self.get_token(True)
+                        header['oauth_token'] = self.get_token(True)
                         return False
                     else:
                         res['errorCode'] = js['errorCode']
