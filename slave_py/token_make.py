@@ -35,13 +35,14 @@ class TokenMake(object):
         return token
 
     def get_account(self):
-        r = requests.get(master_url + '/account')
-        if r.text == '':
-            print 'no active account exist, retry in 60 seconds'
-            time.sleep(60)
-            return self.get_account()
-        else:
-            js = r.json()
-            self.account = js['account']
-            self.password = js['password']
-            print 'account changed : {0}'.format(self.account)
+        while True:
+            r = requests.get(master_url + '/account')
+            if r.text == '':
+                print 'no active account exist, retry in 60 seconds'
+                time.sleep(60)
+            else:
+                js = r.json()
+                self.account = js['account']
+                self.password = js['password']
+                print 'account changed : {0}'.format(self.account)
+                break
