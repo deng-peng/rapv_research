@@ -18,6 +18,8 @@ class CreateAccountsTable extends Migration
             $table->string('password');
             $table->tinyInteger('status')->nullable();
             $table->string('token');
+            $table->string('best_ip');
+            $table->smallInteger('level')->default(1);
             $table->timestamps();
         });
     }

@@ -14,9 +14,9 @@ class TaskController extends Controller
     function getTask(Request $request)
     {
         $seq = $request->ip() . ' - ' . date("Y-m-d h:i:sa");
-        $level = $request->input('level', 0);
-        if ($level > 0) {
-            $people = Person::where('working', '')->where('status', 403)->limit(10)->pluck('email');
+        $account = Account::whereEmail($request->input('account'))->first();
+        if ($account && $account->level > 0) {
+            $people = Person::where('working', '')->where('status', 403)->where('find_count', '<', 2)->limit(10)->pluck('email');
         } else {
             $people = Person::where('working', '')->where('status', 0)->limit(10)->pluck('email');
         }
@@ -26,10 +26,9 @@ class TaskController extends Controller
 
     function getAccount(Request $request)
     {
-        $query = Account::where('status', Null)->orWhere('status', config('token_status.active'));
-        $account = $query->where('best_ip', $request->ip())->orderBy('updated_at')->first();
+        $account = Account::where('status', Null)->orWhere('status', config('token_status.active'))->where('best_ip', $request->ip())->orderBy('updated_at')->first();
         if (!$account) {
-            $account = $query->orderBy('updated_at')->first();
+            $account = Account::where('status', Null)->orWhere('status', config('token_status.active'))->orderBy('updated_at')->first();
         }
         if ($account) {
             $account->status = config('token_status.in_use');
@@ -58,6 +57,7 @@ class TaskController extends Controller
                     $person->status = $value['status'];
                 }
                 $person->working = '';
+                $person->find_count += 1;
                 $person->save();
             }
         }
@@ -81,6 +81,8 @@ class TaskController extends Controller
             $account = new Account();
             $account->email = trim($request->input('account'));
             $account->password = trim($request->input('password', env('LINKEDIN_PASSWORD')));
+            //mark new account as in use
+            $account->status = config('token_status.in_use');
             $account->best_ip = $request->ip();
             $account->level = 0;
             $account->save();

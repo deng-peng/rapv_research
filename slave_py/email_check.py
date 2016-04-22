@@ -66,8 +66,8 @@ class EmailCheck(object):
             if self.token != '' and self.token_expire > time.time():
                 return self.token
         maker = TokenMake()
-        self.account = maker.account
         self.token = maker.make()
+        self.account = maker.account
         self.token_expire = time.time() + 1800 - 60 * 5
         print 'token changed : ' + self.token
         return self.token

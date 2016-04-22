@@ -19,6 +19,7 @@ class CreatePeopleTable extends Migration
             $table->mediumInteger('status')->default(0);
             $table->string('message');
             $table->string('profile_url');
+            $table->smallInteger('find_count')->default(0);
         });
     }
 

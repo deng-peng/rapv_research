@@ -15,7 +15,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('task','TaskController@getTask');
+Route::post('task','TaskController@getTask');
 
 Route::get('account','TaskController@getAccount');
 Route::post('account','TaskController@postAccountStatus');
