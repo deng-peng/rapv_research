@@ -26,9 +26,11 @@ class TaskController extends Controller
 
     function getAccount(Request $request)
     {
-        $account = Account::where('status', Null)->orWhere('status', config('token_status.active'))->where('best_ip', $request->ip())->orderBy('updated_at')->first();
+        $account = Account::where('status', Null)->orWhere('status', config('token_status.active'))
+            ->where('best_ip', $request->ip())->orderBy('updated_at')->first();
         if (!$account) {
-            $account = Account::where('status', Null)->orWhere('status', config('token_status.active'))->orderBy('updated_at')->first();
+            $account = Account::where('status', Null)->orWhere('status', config('token_status.active'))
+                ->where('level', '>', 0)->orderBy('updated_at')->first();
         }
         if ($account) {
             $account->status = config('token_status.in_use');

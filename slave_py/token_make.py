@@ -9,6 +9,9 @@ class TokenMake(object):
         self.account = ''
         self.password = ''
         self.token = ''
+        screenshots = os.getcwd() + '/screenshots/'
+        if not os.path.exists(screenshots):
+            os.mkdir(screenshots)
 
     def make(self):
         self.get_account()
@@ -33,7 +36,7 @@ class TokenMake(object):
         password.send_keys(self.password)
         password.send_keys(Keys.RETURN)
         time.sleep(3)
-        driver.save_screenshot('{0}-{1}.png'.format(self.account, time.time()))
+        driver.save_screenshot('./screenshots/{0}-{1}.png'.format(self.account, time.time()))
 
         driver.get('http://rapportive.jelzo.com:8080/token.html')
         token = driver.execute_script('return IN.ENV.auth.oauth_token')
@@ -82,11 +85,14 @@ class TokenMake(object):
         password_input = driver.find_element_by_id("join-password")
         password_input.send_keys(password)
         password_input.send_keys(Keys.RETURN)
-        time.sleep(3)
-        # save account to master
-        requests.post(master_url + '/account', data={'account': email, 'password': password})
-        self.account = email
+        time.sleep(5)
 
-        # get token for new account
-        driver.get('http://rapportive.jelzo.com:8080/token.html')
-        self.token = driver.execute_script('return IN.ENV.auth.oauth_token')
+        if 'edit-profile' in driver.current_url:
+            # save account to master
+            requests.post(master_url + '/account', data={'account': email, 'password': password})
+            self.account = email
+            driver.save_screenshot('./screenshots/{0}-{1}.png'.format(self.account, time.time()))
+
+            # get token for new account
+            driver.get('http://rapportive.jelzo.com:8080/token.html')
+            self.token = driver.execute_script('return IN.ENV.auth.oauth_token')

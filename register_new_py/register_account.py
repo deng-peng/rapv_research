@@ -1,4 +1,4 @@
-from __init__ import *
+from slave_py import *
 from faker import Factory
 import random
 from selenium import webdriver
