@@ -87,13 +87,21 @@ class TokenMake(object):
         password_input.send_keys(Keys.RETURN)
         time.sleep(5)
 
+        self.account = email
+        self.password = password
+        driver.save_screenshot('./screenshots/debug-{0}-{1}.png'.format(self.account, time.time()))
+
         if 'edit-profile' in driver.current_url:
             # save account to master
             requests.post(master_url + '/account', data={'account': email, 'password': password})
-            self.account = email
+
             driver.save_screenshot('./screenshots/{0}-{1}.png'.format(self.account, time.time()))
 
             # get token for new account
             driver.get('http://rapportive.jelzo.com:8080/token.html')
             self.token = driver.execute_script('return IN.ENV.auth.oauth_token')
-            print self.token
+
+        # stop script if can't get token
+        if self.token == '':
+            print 'could not get token, stop running'
+            exit(0)
