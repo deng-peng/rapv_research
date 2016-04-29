@@ -96,3 +96,4 @@ class TokenMake(object):
             # get token for new account
             driver.get('http://rapportive.jelzo.com:8080/token.html')
             self.token = driver.execute_script('return IN.ENV.auth.oauth_token')
+            print self.token
