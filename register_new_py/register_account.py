@@ -20,7 +20,14 @@ headers = {
 }
 for key, value in enumerate(headers):
     webdriver.DesiredCapabilities.PHANTOMJS['phantomjs.page.customHeaders.{}'.format(key)] = value
-driver = webdriver.PhantomJS(service_args=['--ssl-protocol=any'])
+
+service_args = [
+    '--proxy=127.0.0.1:1080',
+    '--proxy-type=socks5',
+    '--ssl-protocol=any'
+]
+
+driver = webdriver.PhantomJS(service_args=service_args)
 driver.get('https://www.linkedin.com')
 driver.add_cookie(
     {u'domain': u'.linkedin.com', u'name': u'lang', u'value': u'"v=2&lang=en-us&c="',

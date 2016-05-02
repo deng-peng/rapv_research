@@ -69,7 +69,12 @@ class TokenMake(object):
         }
         for key, value in enumerate(headers):
             webdriver.DesiredCapabilities.PHANTOMJS['phantomjs.page.customHeaders.{}'.format(key)] = value
-        driver = webdriver.PhantomJS(service_args=['--ssl-protocol=any'])
+        service_args = [
+            # '--proxy=182.254.153.54:8080',
+            # '--proxy-type=http',
+            '--ssl-protocol=any'
+        ]
+        driver = webdriver.PhantomJS(service_args=service_args)
         driver.get('https://www.linkedin.com')
         driver.add_cookie(
             {u'domain': u'.linkedin.com', u'name': u'lang', u'value': u'"v=2&lang=en-us&c="',
@@ -89,6 +94,7 @@ class TokenMake(object):
 
         self.account = email
         self.password = password
+        self.token = ''
         driver.save_screenshot('./screenshots/debug-{0}-{1}.png'.format(self.account, time.time()))
 
         if 'edit-profile' in driver.current_url:
@@ -103,5 +109,5 @@ class TokenMake(object):
 
         # stop script if can't get token
         if self.token == '':
-            print 'could not get token, stop running'
-            exit(0)
+            print 'could not get token, sleep 20 hours'
+            time.sleep(3600 * 20)

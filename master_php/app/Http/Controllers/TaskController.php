@@ -80,14 +80,17 @@ class TaskController extends Controller
             $account->token = $request->input('token');
             $account->save();
         } else {
-            $account = new Account();
-            $account->email = trim($request->input('account'));
-            $account->password = trim($request->input('password', env('LINKEDIN_PASSWORD')));
-            //mark new account as in use
-            $account->status = config('token_status.in_use');
-            $account->best_ip = $request->ip();
-            $account->level = 0;
-            $account->save();
+            $new_email = trim($request->input('account'));
+            if (!empty($new_email)) {
+                $account = new Account();
+                $account->email = $new_email;
+                $account->password = trim($request->input('password', env('LINKEDIN_PASSWORD')));
+                //mark new account as in use
+                $account->status = config('token_status.in_use');
+                $account->best_ip = $request->ip();
+                $account->level = 0;
+                $account->save();
+            }
         }
     }
 }
