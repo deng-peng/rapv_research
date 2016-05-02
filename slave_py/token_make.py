@@ -109,5 +109,5 @@ class TokenMake(object):
 
         # stop script if can't get token
         if self.token == '':
-            print 'could not get token, sleep 20 hours'
-            time.sleep(3600 * 20)
+            print 'could not get token, sleep 1 hours'
+            time.sleep(3600)
