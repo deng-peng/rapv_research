@@ -97,17 +97,20 @@ class TokenMake(object):
         self.token = ''
         driver.save_screenshot('./screenshots/debug-{0}-{1}.png'.format(self.account, time.time()))
 
-        if 'edit-profile' in driver.current_url:
-            # save account to master
-            requests.post(master_url + '/account', data={'account': email, 'password': password})
+        print 'current url : {0}'.format(driver.current_url)
 
-            driver.save_screenshot('./screenshots/{0}-{1}.png'.format(self.account, time.time()))
+        if 'start/join' not in driver.current_url:
+            if 'security check' not in driver.page_source and 'Security verification' not in driver.page_source:
+                # save account to master
+                requests.post(master_url + '/account', data={'account': email, 'password': password})
 
-            # get token for new account
-            driver.get('http://rapportive.jelzo.com:8080/token.html')
-            self.token = driver.execute_script('return IN.ENV.auth.oauth_token')
+                driver.save_screenshot('./screenshots/{0}-{1}.png'.format(self.account, time.time()))
+
+                # get token for new account
+                driver.get('http://rapportive.jelzo.com:8080/token.html')
+                self.token = driver.execute_script('return IN.ENV.auth.oauth_token')
 
         # stop script if can't get token
         if self.token == '':
             print 'could not get token, sleep 1 hours'
-            time.sleep(3600)
+            time.sleep(3600 * 2)
