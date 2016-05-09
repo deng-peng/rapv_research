@@ -7,19 +7,14 @@ use App\Person;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
-use SuperClosure\Analyzer\Token;
 
 class TaskController extends Controller
 {
     function getTask(Request $request)
     {
         $seq = $request->ip() . ' - ' . date("Y-m-d h:i:sa");
-        $account = Account::whereEmail($request->input('account'))->first();
-        if ($account && $account->level > 0) {
-            $people = Person::where('working', '')->where('status', 403)->where('find_count', '<', 2)->limit(10)->pluck('email');
-        } else {
-            $people = Person::where('working', '')->where('status', 0)->limit(10)->pluck('email');
-        }
+        $people = Person::where('working', '')->where('status', 403)->where('find_count', '<', 2)->limit(10)->pluck('email');
+//      $people = Person::where('working', '')->where('status', 0)->limit(10)->pluck('email');
         Person::whereIn('email', $people)->update(['working' => $seq]);
         return response()->json([$seq => $people]);
     }

@@ -1,5 +1,4 @@
 from __init__ import *
-from token_make import TokenMake
 
 
 class EmailCheck(object):
@@ -61,19 +60,47 @@ class EmailCheck(object):
 
     def get_token(self, force=False):
         if force:
+            self.token = ''
             self.set_account_status('frozen')
         else:
-            if self.token != '' and self.token_expire > time.time():
-                return self.token
-        maker = TokenMake()
-        self.token = maker.make()
-        self.account = maker.account
-        self.token_expire = time.time() + 1800 - 60 * 5
-        print 'token changed : ' + self.token
+            if self.token != '':
+                if self.token_expire > time.time():
+                    return self.token
+                else:
+                    self.token = self.__renew_token(self.account)
+                    return self.token
+        self.token = self.inner_get_token()
         return self.token
 
-    def set_account_status(self, status, token=''):
-        requests.post(master_url + '/account', data={'account': self.account, 'status': status, 'token': token})
+    def set_account_status(self, status):
+        requests.post(account_url + '/api/slave/cookie', data={'account': self.account, 'status': status})
+
+    def inner_get_token(self):
+        while True:
+            r = requests.get(account_url + '/api/slave/cookie')
+            if r.text == '':
+                print 'wait for active account'
+                time.sleep(60)
+            else:
+                js = r.json()
+                self.account = js['account']
+                self.token = self.__renew_token(self.account)
+                if len(self.token) > 0:
+                    self.token_expire = time.time() + 1800 - 60 * 1
+                    print 'token changed : ' + self.token
+                    return self.token
+
+    @staticmethod
+    def __renew_token(account):
+        headers = {'cookie': 'li_at=' + account, 'referer': 'https://mail.google.com/mail/u/0/'}
+        r = requests.get(
+            'https://www.linkedin.com/uas/js/userspace?v=0.0.2000-RC8.53856-1429&apiKey=4XZcfCb3djUl-DHJSFYd1l0ULtgSPl9sXXNGbTKT2e003WAeT6c2AqayNTIN5T1s&onLoad=linkedInAPILoaded612163388635963&authorize=true&credentialsCookie=true&secure=1&',
+            headers=headers)
+        origin = r.text.find('l.oauth_token')
+        start = r.text.find('"', origin)
+        end = r.text.find('"', start + 1)
+        token = r.text[start + 1:end]
+        return token
 
     @staticmethod
     def __make_user_agent():
