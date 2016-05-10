@@ -8,7 +8,7 @@ while True:
     # get token for batch emails
     header_for_batch = email_checker.make_header()
     # limit search for single account
-    if single_count >= 100:
+    if single_count >= 1000:
         print 'search {0} emails for this account'.format(single_count)
         email_checker.set_account_status('frozen')
         email_checker.token = ''
