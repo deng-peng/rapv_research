@@ -89,6 +89,8 @@ class EmailCheck(object):
                     self.token_expire = time.time() + 1800 - 60 * 1
                     print 'token changed : ' + self.token
                     return self.token
+                else:
+                    self.set_account_status('invalid')
 
     @staticmethod
     def __renew_token(account):
