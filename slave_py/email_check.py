@@ -34,10 +34,12 @@ class EmailCheck(object):
                         return res
             elif 'publicProfileUrl' in js:
                 res['publicProfileUrl'] = js['publicProfileUrl']
+                # public profile url
                 res['status'] = 200
                 return res
             elif 'siteStandardProfileRequest' in js:
                 res['publicProfileUrl'] = js['siteStandardProfileRequest']['url']
+                # encoded profile url
                 res['status'] = 201
                 return res
             else:
@@ -75,11 +77,16 @@ class EmailCheck(object):
     def set_account_status(self, status):
         requests.post(account_url + '/api/slave/cookie', data={'account': self.account, 'status': status})
 
+    @staticmethod
+    def report_slave_running_status(status):
+        requests.post(master_url + '/slave/status', data={'status': status})
+
     def inner_get_token(self):
         while True:
             r = requests.get(account_url + '/api/slave/cookie')
             if r.text == '':
                 print 'wait for active account'
+                self.report_slave_running_status('waiting')
                 time.sleep(60)
             else:
                 js = r.json()
@@ -88,6 +95,7 @@ class EmailCheck(object):
                 if len(self.token) > 0:
                     self.token_expire = time.time() + 1800 - 60 * 1
                     print 'token changed : ' + self.token
+                    self.report_slave_running_status('working')
                     return self.token
                 else:
                     self.set_account_status('invalid')
