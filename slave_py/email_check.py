@@ -85,9 +85,9 @@ class EmailCheck(object):
         while True:
             r = requests.get(account_url + '/api/slave/cookie')
             if r.text == '':
-                print 'wait for active account'
+                print 'waiting for active account'
                 self.report_slave_running_status('waiting')
-                time.sleep(60)
+                time.sleep(90)
             else:
                 js = r.json()
                 self.account = js['account']

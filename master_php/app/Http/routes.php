@@ -22,4 +22,4 @@ Route::post('account','TaskController@postAccountStatus');
 
 Route::post('result','TaskController@postResult');
 
-Route::post('salve/status','SlaveController@postStatus');
+Route::post('slave/status','SlaveController@postStatus');

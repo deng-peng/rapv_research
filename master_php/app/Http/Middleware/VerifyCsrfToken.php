@@ -15,6 +15,6 @@ class VerifyCsrfToken extends BaseVerifier
         'result',
         'account',
         'task',
-        'salve/status'
+        'slave/status'
     ];
 }
