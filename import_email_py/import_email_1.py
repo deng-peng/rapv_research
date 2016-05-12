@@ -1,5 +1,6 @@
 import codecs
 from peewee import *
+
 from config import db
 
 
@@ -18,5 +19,10 @@ f = codecs.open('email.txt', 'r', encoding='utf-8')
 for line in f.readlines():
     count += 1
     print count
-    with db.atomic():
-        People.create(email=line.strip(), working='', message='', profile_url='')
+    arr = line.split(':')
+    if len(arr) > 1:
+        try:
+            with db.atomic():
+                People.create(email=arr[0].strip(), working='', message='', profile_url='')
+        except IntegrityError, e:
+            print e

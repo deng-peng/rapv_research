@@ -13,7 +13,9 @@ account.py
 update_profile_py/profile_data.txt
 
 *.log
-import_email_py/email.txt
+import_email_py/*.txt
+import_email_py/config.py
+
 slave_py/token.html
 slave_py/*.png
 slave_py/config.py
