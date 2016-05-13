@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Account;
-use App\Person;
+use App\Utils\Helper;
+use DB;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -13,9 +14,13 @@ class TaskController extends Controller
     function getTask(Request $request)
     {
         $seq = $request->ip() . ' - ' . date("Y-m-d h:i:sa");
-        $people = Person::where('working', '')->where('status', 403)->where('find_count', '<', 2)->limit(10)->pluck('email');
-//      $people = Person::where('working', '')->where('status', 0)->limit(10)->pluck('email');
-        Person::whereIn('email', $people)->update(['working' => $seq]);
+        $table_name = Helper::getRandomPeopleTableName();
+//        $people = DB::table($table_name)->where('working', '')->where('status', 403)->where('find_count', '<', 2)->limit(10)->pluck('email');
+        $people = DB::table($table_name)->where('working', '')->where('status', 0)->limit(10)->pluck('email');
+        if (count($people) == 0) {
+            $table_name = Helper::getRandomPeopleTableName();
+        }
+        DB::table($table_name)->whereIn('email', $people)->update(['working' => $seq]);
         return response()->json([$seq => $people]);
     }
 
@@ -43,21 +48,23 @@ class TaskController extends Controller
     {
         $result = $request->input('result');
         $arr = json_decode($result, true);
+
+        DB::beginTransaction();
         foreach ($arr as $key => $value) {
-            $person = Person::whereEmail($key)->first();
-            if ($person) {
-                if (key_exists('errorCode', $value)) {
-                    $person->status = $value['status'];
-                    $person->message = $value['message'];
-                } else if (key_exists('publicProfileUrl', $value)) {
-                    $person->profile_url = $value['publicProfileUrl'];
-                    $person->status = $value['status'];
-                }
-                $person->working = '';
-                $person->find_count += 1;
-                $person->save();
+            $table_name = Helper::getPeopleTableName($key);
+            $save_data = [
+                'status'  => $value['status'],
+                'working' => ''
+            ];
+            if (key_exists('errorCode', $value)) {
+                $save_data['message'] = $value['message'];
+            } else if (key_exists('publicProfileUrl', $value)) {
+                $save_data['profile_url'] = $value['publicProfileUrl'];
             }
+            DB::table($table_name)->whereEmail($key)->update($save_data);
+            DB::table($table_name)->whereEmail($key)->increment('find_count');
         }
+        DB::commit();
         return response('ok');
     }
 
