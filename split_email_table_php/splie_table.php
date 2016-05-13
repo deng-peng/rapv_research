@@ -5,21 +5,16 @@
  * Date: 16/5/13
  * Time: 下午12:58
  */
-
-include_once "./lib/ez_sql_core.php";
-
-include_once "./lib/ez_sql_mysqli.php";
-
-$db = new ezSQL_mysqli('root', '1234', 'rapv_research', 'localhost');
+require 'config.php';
 
 $last_id = 0;
-$batch_size = 1000;
+$batch_size = 5000;
 
-$max_id = $db->get_var("select id from people order by id desc limit 1");
+$max_id = $db->get_var("select id from people where status > 0 order by id desc limit 1");
 echo $max_id . PHP_EOL;
 
 while ($last_id < $max_id) {
-    $sql = "select * from people order by id limit $last_id, $batch_size;";
+    $sql = "select * from people where status > 0 order by id limit $last_id, $batch_size;";
     $people = $db->get_results($sql);
     foreach ($people as $p) {
         insert_people($p, $db);
