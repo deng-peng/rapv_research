@@ -13,7 +13,7 @@ require 'config.php';
 $count = 0;
 $batchSize = 10000;
 
-$handle = fopen("./data/email.txt", "r");
+$handle = fopen("./data/sample.txt", "r");
 if ($handle) {
     $db->query('SET AUTOCOMMIT=0');
     $db->query('BEGIN');
@@ -38,9 +38,9 @@ if ($handle) {
 function parse_email($s)
 {
     $s = strtolower(trim($s));
-    $arr = explode(':', $s);
-    if (count($arr) > 1)
-        return $arr[0];
+    $arr = explode('-|-', $s);
+    if (count($arr) > 3)
+        return $arr[2];
     return '';
 }
 
