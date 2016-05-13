@@ -17,6 +17,7 @@ import_email_py/*.txt
 import_email_py/config.py
 
 split_email_table_php/config.php
+split_email_table_php/data/
 
 slave_py/token.html
 slave_py/*.png
