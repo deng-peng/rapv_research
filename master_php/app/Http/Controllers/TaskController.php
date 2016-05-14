@@ -52,6 +52,9 @@ class TaskController extends Controller
         DB::beginTransaction();
         foreach ($arr as $key => $value) {
             $table_name = Helper::getPeopleTableName($key);
+            if (count($value) == 0) {
+                continue;
+            }
             $save_data = [
                 'status'  => $value['status'],
                 'working' => ''
