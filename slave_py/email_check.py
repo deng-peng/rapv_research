@@ -1,4 +1,5 @@
 from __init__ import *
+from email.utils import parseaddr
 
 
 class EmailCheck(object):
@@ -10,6 +11,9 @@ class EmailCheck(object):
 
     def check(self, email, header):
         try:
+            # check email address valid
+            if '@' not in parseaddr(email)[1]:
+                return {'status': 400, 'message': 'invalid email address'}
             r = requests.get(self.url.format(email.replace('@', '%40')), headers=header, timeout=30)
             js = r.json()
             print js
