@@ -23,3 +23,5 @@ Route::post('account','TaskController@postAccountStatus');
 Route::post('result','TaskController@postResult');
 
 Route::post('slave/status','SlaveController@postStatus');
+
+Route::get('slave/status','SlaveController@getStatus');

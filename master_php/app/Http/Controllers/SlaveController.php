@@ -17,4 +17,9 @@ class SlaveController extends Controller
         $slave->save();
         return response('updated ' . $slave->id);
     }
+
+    function getStatus()
+    {
+        return view('status')->withSlaves(Slave::all());
+    }
 }
