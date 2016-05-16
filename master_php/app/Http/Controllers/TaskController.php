@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Account;
 use App\Utils\Helper;
 use DB;
 use Illuminate\Http\Request;
@@ -22,26 +21,6 @@ class TaskController extends Controller
         }
         DB::table($table_name)->whereIn('email', $people)->update(['working' => $seq]);
         return response()->json([$seq => $people]);
-    }
-
-    function getAccount(Request $request)
-    {
-        $account = Account::where('status', Null)->orWhere('status', config('token_status.active'))
-            ->where('best_ip', $request->ip())->orderBy('updated_at')->first();
-        if (!$account) {
-            $account = Account::where('status', Null)->orWhere('status', config('token_status.active'))
-                ->where('level', '>', 0)->orderBy('updated_at')->first();
-        }
-        if ($account) {
-            $account->status = config('token_status.in_use');
-            $account->save();
-            return response()->json([
-                'account'  => $account->email,
-                'password' => $account->password,
-                'level'    => $account->level
-            ]);
-        }
-        return '';
     }
 
     function postResult(Request $request)
@@ -64,38 +43,17 @@ class TaskController extends Controller
             } else if (key_exists('publicProfileUrl', $value)) {
                 $save_data['profile_url'] = $value['publicProfileUrl'];
             }
-            DB::table($table_name)->whereEmail($key)->update($save_data);
-            DB::table($table_name)->whereEmail($key)->increment('find_count');
+            $person = DB::table($table_name)->whereEmail($key)->first();
+            if ($person) {
+                $save_data['find_count'] = $person->find_count + 1;
+                DB::table($table_name)->whereEmail($key)->update($save_data);
+            } else {
+                $save_data['email'] = $key;
+                $save_data['find_count'] = 1;
+                DB::table($table_name)->insert($save_data);
+            }
         }
         DB::commit();
         return response('ok');
-    }
-
-    function postAccountStatus(Request $request)
-    {
-        $account = Account::whereEmail($request->input('account'))->first();
-        if ($account) {
-            $status = $request->input('status');
-            if ($status == 'active') {
-                $account->status = config('token_status.active');
-            } elseif ($status == 'frozen') {
-                $account->status = config('token_status.frozen');
-            } elseif ($status == 'in_use') {
-            }
-            $account->token = $request->input('token');
-            $account->save();
-        } else {
-            $new_email = trim($request->input('account'));
-            if (!empty($new_email)) {
-                $account = new Account();
-                $account->email = $new_email;
-                $account->password = trim($request->input('password', env('LINKEDIN_PASSWORD')));
-                //mark new account as in use
-                $account->status = config('token_status.in_use');
-                $account->best_ip = $request->ip();
-                $account->level = 0;
-                $account->save();
-            }
-        }
     }
 }
