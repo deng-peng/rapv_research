@@ -18,9 +18,21 @@ if ($handle) {
     $db->query('SET AUTOCOMMIT=0');
     $db->query('BEGIN');
     while (($line = fgets($handle)) !== false) {
+        $count = $count + 1;
+
+        if($count <= 14160000)
+            //28380000
+            //42570000
+            //56830000
+            //70870000
+            //84950000
+            //28310000
+            //42540000
+            //56770000
+            continue;
+
         $email = parse_email($line);
         insert_email($email, $db);
-        $count = $count + 1;
         if ($count % $batchSize === 0) {
             if ($db->query('COMMIT') !== false) {
                 echo "commit success , count : {$count}" . PHP_EOL;
