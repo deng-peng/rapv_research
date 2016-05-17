@@ -15,7 +15,7 @@ class TaskController extends Controller
         $seq = $request->ip() . ' - ' . date("Y-m-d h:i:sa");
         $table_name = Helper::getRandomPeopleTableName();
 //        $people = DB::table($table_name)->where('working', '')->where('status', 403)->where('find_count', '<', 2)->limit(10)->pluck('email');
-        $people = DB::table($table_name)->where('working', '')->where('status', 0)->limit(10)->pluck('email');
+        $people = DB::table($table_name)->where('working', '')->where('status', 0)->limit(20)->pluck('email');
         if (count($people) == 0) {
             $table_name = Helper::getRandomPeopleTableName();
         }

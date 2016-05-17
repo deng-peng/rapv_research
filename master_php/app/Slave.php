@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Slave extends Model
 {
-    protected $fillable = ['ip', 'status'];
+    protected $fillable = ['ip', 'name', 'status'];
 }

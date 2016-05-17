@@ -11,7 +11,7 @@ class SlaveController extends Controller
 {
     function postStatus(Request $request)
     {
-        $slave = Slave::firstOrNew(['ip' => $request->ip()]);
+        $slave = Slave::firstOrNew(['ip' => $request->ip(), 'name' => $request->input('name')]);
         $slave->status = $request->input('status', '');
         $slave->valid = true;
         $slave->save();

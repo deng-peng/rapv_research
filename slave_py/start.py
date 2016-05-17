@@ -20,7 +20,7 @@ def worker():
         r = requests.post(master_url + '/task')
         js = r.json()
         (seq, emails) = js.popitem()
-        # print emails
+        print '{0} got {1} new tasks'.format(threading.currentThread().name, len(emails))
         # no more emails
         if len(emails) == 0:
             email_checker.set_account_status('active')
@@ -36,7 +36,7 @@ def worker():
                 results[address] = res
             else:
                 results[address] = []
-            print '{0} check count : {0}'.format(threading.currentThread().name, count)
+            print '{0} check count : {1}'.format(threading.currentThread().name, count)
         payload = json.dumps(results)
         r = requests.post(master_url + '/result', data={'result': payload})
         print '{0} : {1}'.format(threading.currentThread().name, r.text)

@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function () {
             //mark slave server not running
-            DB::update("update slaves set status = 'stopped !!!' where updated_at + INTERVAL 60 MINUTE < NOW()");
+            DB::update("update slaves set status = '== stopped ==' where updated_at + INTERVAL 60 MINUTE < NOW()");
 
         })->everyTenMinutes();
     }
