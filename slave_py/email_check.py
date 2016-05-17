@@ -8,13 +8,15 @@ class EmailCheck(object):
         self.account = ''
         self.token_expire = ''
         self.url = 'https://api.linkedin.com/v1/people/email={}:(first-name,last-name,headline,location,distance,positions,twitter-accounts,im-accounts,phone-numbers,member-url-resources,picture-urls::(original),site-standard-profile-request,public-profile-url,relation-to-viewer:(connections:(person:(first-name,last-name,headline,site-standard-profile-request,picture-urls::(original)))))'
+        self.proxies = {'https': "socks5://127.0.0.1:9050"}
 
     def check(self, email, header):
         try:
             # check email address valid
             if '@' not in parseaddr(email)[1]:
                 return {'status': 400, 'message': 'invalid email address'}
-            r = requests.get(self.url.format(email.replace('@', '%40')), headers=header, timeout=30)
+            r = requests.get(self.url.format(email.replace('@', '%40')), headers=header, proxies=self.proxies,
+                             timeout=30)
             js = r.json()
             print js
             res = {}
@@ -104,14 +106,13 @@ class EmailCheck(object):
                 else:
                     self.set_account_status('invalid')
 
-    @staticmethod
-    def __renew_token(account):
+    def __renew_token(self, account):
         headers = {'cookie': 'li_at=' + account, 'referer': 'https://mail.google.com/mail/u/0/'}
         r = requests.get(
             'https://www.linkedin.com/uas/js/userspace?v=0.0.2000-RC8.55927-1429&apiKey={0}&onLoad=linkedInAPILoaded{0}&authorize=true&credentialsCookie=true&secure=1&'.format(
                 '4XZcfCb3djUl-DHJSFYd1l0ULtgSPl9sXXNGbTKT2e003WAeT6c2AqayNTIN5T1s',
                 random.randint(100000000000000, 999999999999999)),
-            headers=headers)
+            headers=headers, proxies=self.proxies)
         origin = r.text.find('l.oauth_token')
         start = r.text.find('"', origin)
         end = r.text.find('"', start + 1)

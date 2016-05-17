@@ -34,8 +34,6 @@ while True:
             results[address] = res
         else:
             results[address] = []
-        if count % 8 == 0:
-            time.sleep(1)
         print 'check count : {0}'.format(count)
     payload = json.dumps(results)
     r = requests.post(master_url + '/result', data={'result': payload})
@@ -43,5 +41,3 @@ while True:
     if r.text != 'ok':
         email_checker.set_account_status('active')
         break
-    else:
-        time.sleep(3)
