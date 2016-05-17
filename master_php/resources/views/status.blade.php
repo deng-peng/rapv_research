@@ -15,6 +15,7 @@
             <tr>
                 <th>#</th>
                 <th>IP Address</th>
+                <th>Thread</th>
                 <th>Status</th>
                 <th>Last Report</th>
                 <th>Launched</th>
@@ -25,6 +26,7 @@
                 <tr>
                     <th scope="row">{{ $slave->id }}</th>
                     <td>{{ $slave->ip }}</td>
+                    <td>{{ $slave->name }}</td>
                     <td>{{ $slave->status }}</td>
                     <td>{{ $slave->updated_at->diffForHumans(Carbon\Carbon::now()) }}</td>
                     <td>{{ $slave->created_at }}</td>
