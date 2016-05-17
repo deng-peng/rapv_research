@@ -85,7 +85,7 @@ class EmailCheck(object):
 
     @staticmethod
     def report_slave_running_status(status):
-        requests.post(master_url + '/slave/status', data={'status': status})
+        requests.post(master_url + '/slave/status', data={'status': status, 'name': threading.currentThread().name})
 
     def inner_get_token(self):
         while True:
@@ -100,7 +100,7 @@ class EmailCheck(object):
                 self.token = self.__renew_token(self.account)
                 if len(self.token) > 0:
                     self.token_expire = time.time() + 1800 - 60 * 1
-                    print 'token changed : ' + self.token
+                    print '{0} token changed : {1}'.format(threading.currentThread().name, self.token)
                     self.report_slave_running_status('working')
                     return self.token
                 else:
