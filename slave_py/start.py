@@ -57,4 +57,5 @@ def worker():
 if __name__ == '__main__':
     for i in range(max_threads):
         th = threading.Thread(target=worker)
+        time.sleep(60)
         th.start()
