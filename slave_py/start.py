@@ -6,16 +6,18 @@ from email_check import EmailCheck
 def post_results(payload):
     r = requests.post(master_url + '/result', data={'result': payload})
     if r.text != 'ok':
+        print 'save result error, retry in 60 sec'
         raise Exception('retry')
 
 
-@retry(wait_fixed=60000)
+@retry(wait_fixed=600000)
 def get_tasks():
     r = requests.post(master_url + '/task')
     js = r.json()
     (seq, emails) = js.popitem()
     if len(emails) == 0:
-        raise Exception('no tasks, retry in 60 sec')
+        print 'no tasks, retry in 10 min'
+        raise Exception('retry')
     return emails
 
 
@@ -44,7 +46,6 @@ def worker():
             count += 1
             current_account_count += 1
             res = email_checker.check(address, header_for_batch)
-            print res
             if res:
                 results[address] = res
             else:

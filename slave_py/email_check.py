@@ -51,6 +51,9 @@ class EmailCheck(object):
                 return res
             else:
                 return False
+        except requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError:
+            self.proxies = self.get_proxy()
+            return False
         except Exception, e:
             print(e)
             return False
@@ -79,6 +82,7 @@ class EmailCheck(object):
                     self.token = self.__renew_token(self.account)
                     return self.token
         self.token = self.inner_get_token()
+        self.proxies = self.get_proxy()
         return self.token
 
     def set_account_status(self, status):
@@ -116,12 +120,12 @@ class EmailCheck(object):
         token = r.text[start + 1:end]
         return token
 
+    @retry
     def get_proxy(self):
-        while True:
-            r = requests.post(master_url + '/proxy')
-            proxy_str = r.text.strip()
-            if Helper.is_proxy_valid(proxy_str):
-                self.proxies = {'https': "socks5://" + proxy_str}
-                break
-            else:
-                Helper.post_proxy_status(proxy_str)
+        r = requests.post(master_url + '/proxy')
+        proxy_str = r.text.strip()
+        if Helper.is_proxy_valid(proxy_str):
+            return {'https': "socks5://" + proxy_str}
+        else:
+            Helper.post_proxy_status(proxy_str, False)
+            raise Exception('invalid proxy')
