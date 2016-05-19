@@ -2,6 +2,23 @@ from __init__ import *
 from email_check import EmailCheck
 
 
+@retry(wait_fixed=60000)
+def post_results(payload):
+    r = requests.post(master_url + '/result', data={'result': payload})
+    if r.text != 'ok':
+        raise Exception('retry')
+
+
+@retry(wait_fixed=60000)
+def get_tasks():
+    r = requests.post(master_url + '/task')
+    js = r.json()
+    (seq, emails) = js.popitem()
+    if len(emails) == 0:
+        raise Exception('no tasks, retry in 60 sec')
+    return emails
+
+
 def worker():
     email_checker = EmailCheck()
     count = 0
@@ -16,16 +33,12 @@ def worker():
             email_checker.token = ''
             current_account_count = 0
             continue
-        # get tasks for specific account
-        r = requests.post(master_url + '/task')
-        js = r.json()
-        (seq, emails) = js.popitem()
+        emails = get_tasks()
         print '{0} got {1} new tasks'.format(threading.currentThread().name, len(emails))
         # no more emails
         if len(emails) == 0:
             email_checker.set_account_status('active')
             break
-
         results = {}
         for address in emails:
             count += 1
@@ -38,11 +51,7 @@ def worker():
                 results[address] = []
             print '{0} check count : {1}'.format(threading.currentThread().name, count)
         payload = json.dumps(results)
-        r = requests.post(master_url + '/result', data={'result': payload})
-        print '{0} : {1}'.format(threading.currentThread().name, r.text)
-        if r.text != 'ok':
-            email_checker.set_account_status('active')
-            break
+        post_results(payload)
 
 
 if __name__ == '__main__':
