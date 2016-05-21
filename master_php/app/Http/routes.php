@@ -22,3 +22,7 @@ Route::post('result','TaskController@postResult');
 Route::post('slave/status','SlaveController@postStatus');
 
 Route::get('slave/status','SlaveController@getStatus');
+
+Route::get('proxy','ProxyController@getProxy');
+
+Route::post('proxy','ProxyController@updateProxyStatus');

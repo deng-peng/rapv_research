@@ -19,7 +19,6 @@ class EmailCheck(object):
             r = requests.get(self.url.format(email.replace('@', '%40')), headers=header, proxies=self.proxies,
                              timeout=30)
             js = r.json()
-            print js
             res = {}
             if 'errorCode' in js:
                 if js['errorCode'] == 0:
@@ -35,6 +34,7 @@ class EmailCheck(object):
                         header['oauth_token'] = self.get_token(True)
                         return False
                     else:
+                        print js
                         res['errorCode'] = js['errorCode']
                         res['status'] = js['status']
                         res['message'] = js['message']
@@ -50,7 +50,11 @@ class EmailCheck(object):
                 res['status'] = 201
                 return res
             else:
+                print js
                 return False
+        except urllib3.exceptions.NewConnectionError:
+            self.proxies = self.get_proxy()
+            return False
         except requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError:
             self.proxies = self.get_proxy()
             return False
@@ -122,10 +126,14 @@ class EmailCheck(object):
 
     @retry
     def get_proxy(self):
-        r = requests.post(master_url + '/proxy')
-        proxy_str = r.text.strip()
-        if Helper.is_proxy_valid(proxy_str):
-            return {'https': "socks5://" + proxy_str}
+        r = requests.get(master_url + '/proxy')
+        js = r.json()
+        proxy_id = js['id']
+        host = js['host']
+        port = js['port']
+        protocol = js['protocol'].lower()
+        if Helper.is_proxy_valid(protocol, host, port):
+            return {'https': "{0}://{1}:{2}".format(protocol, host, port)}
         else:
-            Helper.post_proxy_status(proxy_str, False)
+            Helper.update_proxy_status(proxy_id, 'invalid')
             raise Exception('invalid proxy')

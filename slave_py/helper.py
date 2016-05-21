@@ -7,15 +7,15 @@ class Helper(object):
         requests.post(master_url + '/slave/status', data={'status': status, 'name': threading.currentThread().name})
 
     @staticmethod
-    def post_proxy_status(proxy_str, status=False):
-        pass
+    def update_proxy_status(proxy_id, status):
+        requests.post(master_url + '/proxy', data={'id': proxy_id, 'status': status})
 
     @staticmethod
-    def is_proxy_valid(proxy_str):
-        host = proxy_str.split(':')[0]
+    def is_proxy_valid(protocol, host, port):
+        proxy_str = "{0}://{1}:{2}".format(protocol, host, port)
         p = {
-            'http': "socks5://" + proxy_str,
-            'https': "socks5://" + proxy_str
+            'http': proxy_str,
+            'https': proxy_str
         }
         try:
             result = requests.get('http://checkip.amazonaws.com/', proxies=p, timeout=20).text.strip()
