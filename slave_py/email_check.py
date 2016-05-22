@@ -9,7 +9,7 @@ class EmailCheck(object):
         self.account = ''
         self.token_expire = ''
         self.url = 'https://api.linkedin.com/v1/people/email={}:(first-name,last-name,headline,location,distance,positions,twitter-accounts,im-accounts,phone-numbers,member-url-resources,picture-urls::(original),site-standard-profile-request,public-profile-url,relation-to-viewer:(connections:(person:(first-name,last-name,headline,site-standard-profile-request,picture-urls::(original)))))'
-        self.proxies = {}
+        self.proxies = {'https': "socks5://127.0.0.1:9050"}
 
     def check(self, email, header):
         try:
@@ -52,12 +52,6 @@ class EmailCheck(object):
             else:
                 print js
                 return False
-        except urllib3.exceptions.NewConnectionError:
-            self.proxies = self.get_proxy()
-            return False
-        except requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError:
-            self.proxies = self.get_proxy()
-            return False
         except Exception, e:
             print(e)
             return False
@@ -86,7 +80,6 @@ class EmailCheck(object):
                     self.token = self.__renew_token(self.account)
                     return self.token
         self.token = self.inner_get_token()
-        self.proxies = self.get_proxy()
         return self.token
 
     def set_account_status(self, status):

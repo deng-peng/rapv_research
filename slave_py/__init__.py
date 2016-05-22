@@ -1,6 +1,5 @@
 import time
 import requests
-import urllib3
 import json
 import random
 import threading
