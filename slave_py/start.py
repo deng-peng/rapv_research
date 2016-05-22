@@ -1,5 +1,11 @@
 from __init__ import *
 from email_check import EmailCheck
+import logging
+
+logging.basicConfig(level=logging.WARNING,
+                    format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                    datefmt='%Y-%m-%d %X',
+                    filename='./logs/log-{0}.txt'.format(time.strftime('%Y-%m-%d', time.localtime())))
 
 
 @retry(wait_fixed=60000)
@@ -23,7 +29,6 @@ def get_tasks():
 
 def worker():
     email_checker = EmailCheck()
-    count = 0
     current_account_count = 0
     while True:
         # get token for batch emails
@@ -43,14 +48,13 @@ def worker():
             break
         results = {}
         for address in emails:
-            count += 1
             current_account_count += 1
             res = email_checker.check(address, header_for_batch)
             if res:
                 results[address] = res
             else:
                 results[address] = []
-            print '{0} check count : {1}'.format(threading.currentThread().name, count)
+            print '{0} check count : {1}'.format(threading.currentThread().name, email_checker.check_count)
         payload = json.dumps(results)
         post_results(payload)
 

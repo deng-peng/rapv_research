@@ -3,8 +3,12 @@ from __init__ import *
 
 class Helper(object):
     @staticmethod
-    def report_slave_running_status(status):
-        requests.post(master_url + '/slave/status', data={'status': status, 'name': threading.currentThread().name})
+    def report_slave_running_status(status, check_count):
+        requests.post(master_url + '/slave/status', data={
+            'status': status,
+            'name': threading.currentThread().name,
+            'check_count': check_count,
+        })
 
     @staticmethod
     def update_proxy_status(proxy_id, status):

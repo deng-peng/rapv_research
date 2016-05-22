@@ -1,7 +1,13 @@
 import threading
-
 from email_check import EmailCheck
 import time
+
+import logging
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                    datefmt='%Y-%m-%d %X',
+                    filename='./logs/log-{0}.txt'.format(time.strftime('%Y-%m-%d', time.localtime())))
 
 
 def run_thread(number):

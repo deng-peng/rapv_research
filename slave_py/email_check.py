@@ -1,4 +1,3 @@
-from __init__ import *
 from email.utils import parseaddr
 from helper import *
 
@@ -10,8 +9,10 @@ class EmailCheck(object):
         self.token_expire = ''
         self.url = 'https://api.linkedin.com/v1/people/email={}:(first-name,last-name,headline,location,distance,positions,twitter-accounts,im-accounts,phone-numbers,member-url-resources,picture-urls::(original),site-standard-profile-request,public-profile-url,relation-to-viewer:(connections:(person:(first-name,last-name,headline,site-standard-profile-request,picture-urls::(original)))))'
         self.proxies = {'https': "socks5://127.0.0.1:9050"}
+        self.check_count = 0
 
     def check(self, email, header):
+        self.check_count += 1
         try:
             # check email address valid
             if '@' not in parseaddr(email)[1]:
@@ -54,6 +55,7 @@ class EmailCheck(object):
                 return False
         except Exception, e:
             print(e)
+            logging.warning(e)
             return False
 
     def make_header(self):
@@ -83,13 +85,17 @@ class EmailCheck(object):
         return self.token
 
     def set_account_status(self, status):
-        requests.post(account_url + '/api/slave/cookie', data={'account': self.account, 'status': status})
+        try:
+            requests.post(account_url + '/api/slave/cookie', data={'account': self.account, 'status': status})
+        except Exception, e:
+            logging.warning(threading.currentThread().name)
+            logging.warning(e)
 
     @retry(wait_fixed=90000)
     def inner_get_token(self):
         r = requests.get(account_url + '/api/slave/cookie')
         if r.text == '':
-            Helper.report_slave_running_status('waiting')
+            Helper.report_slave_running_status('waiting', self.check_count)
             raise Exception('waiting for active account')
         else:
             js = r.json()
@@ -98,24 +104,29 @@ class EmailCheck(object):
             if len(self.token) > 0:
                 self.token_expire = time.time() + 1800 - 60 * 1
                 print '{0} token changed : {1}'.format(threading.currentThread().name, self.token)
-                Helper.report_slave_running_status('working')
+                Helper.report_slave_running_status('working', self.check_count)
                 return self.token
             else:
                 self.set_account_status('invalid')
                 raise Exception('invalid account')
 
     def __renew_token(self, account):
-        headers = {'cookie': 'li_at=' + account, 'referer': 'https://mail.google.com/mail/u/0/'}
-        r = requests.get(
-            'https://www.linkedin.com/uas/js/userspace?v=0.0.2000-RC8.55927-1429&apiKey={0}&onLoad=linkedInAPILoaded{0}&authorize=true&credentialsCookie=true&secure=1&'.format(
-                '4XZcfCb3djUl-DHJSFYd1l0ULtgSPl9sXXNGbTKT2e003WAeT6c2AqayNTIN5T1s',
-                random.randint(100000000000000, 999999999999999)),
-            headers=headers, proxies=self.proxies)
-        origin = r.text.find('l.oauth_token')
-        start = r.text.find('"', origin)
-        end = r.text.find('"', start + 1)
-        token = r.text[start + 1:end]
-        return token
+        try:
+            headers = {'cookie': 'li_at=' + account, 'referer': 'https://mail.google.com/mail/u/0/'}
+            r = requests.get(
+                'https://www.linkedin.com/uas/js/userspace?v=0.0.2000-RC8.55927-1429&apiKey={0}&onLoad=linkedInAPILoaded{0}&authorize=true&credentialsCookie=true&secure=1&'.format(
+                    '4XZcfCb3djUl-DHJSFYd1l0ULtgSPl9sXXNGbTKT2e003WAeT6c2AqayNTIN5T1s',
+                    random.randint(100000000000000, 999999999999999)),
+                headers=headers, proxies=self.proxies)
+            origin = r.text.find('l.oauth_token')
+            start = r.text.find('"', origin)
+            end = r.text.find('"', start + 1)
+            token = r.text[start + 1:end]
+            return token
+        except Exception, e:
+            logging.warning(threading.currentThread().name)
+            logging.warning(e)
+            return ''
 
     @retry
     def get_proxy(self):
