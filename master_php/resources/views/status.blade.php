@@ -13,23 +13,27 @@
         <table class="table table-striped">
             <thead>
             <tr>
-                <th>#</th>
                 <th>IP Address</th>
                 <th>Thread</th>
                 <th>Status</th>
                 <th>Last Report</th>
-                <th>Launched</th>
+                <th>Check Count</th>
             </tr>
             </thead>
             <tbody>
+            <?php $last_ip = ''; ?>
             @foreach($slaves as $slave)
                 <tr>
-                    <th scope="row">{{ $slave->id }}</th>
-                    <td>{{ $slave->ip }}</td>
+                    @if($last_ip == $slave->ip)
+                        <td></td>
+                    @else
+                        <td>{{ $slave->ip }}</td>
+                        <?php $last_ip = $slave->ip; ?>
+                    @endif
                     <td>{{ $slave->name }}</td>
                     <td>{{ $slave->status }}</td>
                     <td>{{ $slave->updated_at->diffForHumans(Carbon\Carbon::now()) }}</td>
-                    <td>{{ $slave->created_at }}</td>
+                    <td>{{ $slave->check_count }}</td>
                 </tr>
             @endforeach
             </tbody>
