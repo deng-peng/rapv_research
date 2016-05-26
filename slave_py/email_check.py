@@ -13,12 +13,17 @@ class EmailCheck(object):
 
     def check(self, email, header):
         self.check_count += 1
+        # check email address valid
+        if '@' not in parseaddr(email)[1]:
+            return {'status': 400, 'message': 'invalid email address'}
         try:
-            # check email address valid
-            if '@' not in parseaddr(email)[1]:
-                return {'status': 400, 'message': 'invalid email address'}
             r = requests.get(self.url.format(email.replace('@', '%40')), headers=header, proxies=self.proxies,
                              timeout=30)
+        except Exception, e:
+            logging.warning(e)
+            return False
+        
+        try:
             js = r.json()
             res = {}
             if 'errorCode' in js:
@@ -56,6 +61,7 @@ class EmailCheck(object):
         except Exception, e:
             print(e)
             logging.warning(e)
+            logging.warning(r.text)
             return False
 
     def make_header(self):
