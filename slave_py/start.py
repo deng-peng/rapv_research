@@ -5,7 +5,7 @@ import logging
 logging.basicConfig(level=logging.WARNING,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                     datefmt='%Y-%m-%d %X',
-                    filename='./logs/log-{0}.txt'.format(time.strftime('%Y-%m-%d', time.localtime())))
+                    filename='./logs/log.txt')
 
 
 @retry(wait_fixed=60000)
