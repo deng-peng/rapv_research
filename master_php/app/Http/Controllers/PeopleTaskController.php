@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
-class TaskController extends Controller
+class PeopleTaskController extends Controller
 {
     function getTask(Request $request)
     {
