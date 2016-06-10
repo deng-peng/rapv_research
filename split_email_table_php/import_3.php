@@ -7,6 +7,7 @@
  */
 
 error_reporting(E_ERROR);
+ini_set("memory_limit", "4096M");
 
 require 'config.php';
 
@@ -19,15 +20,9 @@ $db->query('BEGIN');
 foreach ($handle as $line) {
     $count = $count + 1;
 
-    if ($count <= 8570000)
-        //28380000
+    if ($count <= 18950000)
+        //8570000
         //42570000
-        //56830000
-        //70870000
-        //84950000
-        //28310000
-        //42540000
-        //56770000
         continue;
 
     $email = parse_email($line);
@@ -41,6 +36,7 @@ foreach ($handle as $line) {
             die();
         }
     }
+    unset($email);
 }
 $db->query('COMMIT');
 echo 'finished';
