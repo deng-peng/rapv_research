@@ -23,10 +23,10 @@ def get_table_name(m):
 
 
 count = 0
-batch = 100
+batch = 10000
 f = codecs.open('./data/linked1.cfg', 'r', encoding='utf-8')
 with connection.cursor() as cursor:
-    for line in f.readlines():
+    for line in f:
         count += 1
         email = parse_email(line)
         if email:
@@ -35,7 +35,9 @@ with connection.cursor() as cursor:
             try:
                 cursor.execute(sql)
             except pymysql.err.IntegrityError:
-                print 'duplicate , skip'
+                pass
+            except pymysql.err.ProgrammingError:
+                pass
         if count % batch == 0:
             connection.commit()
             print '{0} commit success , count : {1}'.format(datetime.now(), count)

@@ -20,7 +20,7 @@ $db->query('BEGIN');
 foreach ($handle as $line) {
     $count = $count + 1;
 
-    if ($count <= 18950000)
+    if ($count <= 27880000)
         //8570000
         //42570000
         continue;
