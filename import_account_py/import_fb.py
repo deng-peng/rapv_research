@@ -6,7 +6,7 @@ from config import connection
 
 
 def parse_line(s):
-    s = s.strip().lower()
+    s = s.strip()
     arr = s.split(':')
     if len(arr) >= 2:
         return arr[0], arr[1]
