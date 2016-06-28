@@ -23,6 +23,7 @@ def get_table_name(m):
 
 
 count = 0
+success_count = 0
 batch = 10000
 f = codecs.open('./data/linked1.cfg', 'r', encoding='utf-8')
 with connection.cursor() as cursor:
@@ -31,16 +32,18 @@ with connection.cursor() as cursor:
         email = parse_email(line)
         if email:
             table_name = get_table_name(email)
-            sql = "INSERT INTO `{0}` VALUE (0, '{1}','', 0, '', '' ,0, 10)".format(table_name, email)
+            sql = "INSERT INTO `{0}` VALUE (0, '{1}','', 0, '', '', '' ,0, 10)".format(table_name, email)
             try:
                 cursor.execute(sql)
+                success_count += 1
             except pymysql.err.IntegrityError:
                 pass
             except pymysql.err.ProgrammingError:
                 pass
         if count % batch == 0:
             connection.commit()
-            print '{0} commit success , count : {1}'.format(datetime.now(), count)
+            print '{0} commit success , count : {1}, insert : {2}'.format(datetime.now(), count, success_count)
             connection.begin()
 connection.commit()
 connection.close()
+print '{0} commit success , count : {1}, insert : {2}'.format(datetime.now(), count, success_count)
