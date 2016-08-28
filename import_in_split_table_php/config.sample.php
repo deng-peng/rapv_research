@@ -9,4 +9,4 @@ include_once "./lib/ez_sql_core.php";
 
 include_once "./lib/ez_sql_mysqli.php";
 
-$db = new ezSQL_mysqli('root', '1234', 'rapv_research', 'localhost');
+$db = new ezSQL_mysqli('root', '', 'table', 'localhost');
