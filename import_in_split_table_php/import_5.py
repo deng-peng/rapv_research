@@ -31,16 +31,21 @@ f = codecs.open('/home/forge/email_list/b1bp.txt', 'r', encoding='utf-8')
 with connection.cursor() as cursor:
     for line in f:
         count += 1
+        if count <= 1380000:
+            continue
         email = parse_email(line)
         if email:
             table_name = get_table_name(email)
-            sql = "INSERT INTO `{0}` VALUE (0, '{1}','', 0, '', '', '' ,0, 0)".format(table_name, email)
             try:
+                sql = "INSERT INTO `{0}` VALUE (0, '{1}','', 0, '', '', '' ,0, 0)".format(table_name, email)
                 cursor.execute(sql)
                 success_count += 1
             except pymysql.err.IntegrityError:
                 pass
             except pymysql.err.ProgrammingError:
+                pass
+            except Exception, e:
+                print e
                 pass
         if count % batch == 0:
             connection.commit()
