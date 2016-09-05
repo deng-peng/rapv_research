@@ -38,7 +38,8 @@ def get_table_name(m):
 count = 0
 success_count = 0
 batch = 10000
-# f = codecs.open('/home/forge/email_list/imesh.txt', 'r', encoding='utf-8')
+priority = 1
+# f = codecs.open('/home/forge/email_list/twitter.txt', 'r', encoding='utf-8')
 f = codecs.open('./data/twitter.txt', 'r', encoding='utf-8')
 with connection.cursor() as cursor:
     for line in f:
@@ -49,7 +50,7 @@ with connection.cursor() as cursor:
         if email:
             table_name = get_table_name(email)
             try:
-                sql = "INSERT INTO `{0}` VALUE (0, '{1}','', 0, '', '', '' ,0, 2)".format(table_name, email)
+                sql = "INSERT INTO `{0}` VALUE (0, '{1}','', 0, '', '', '' ,0, {2})".format(table_name, email, priority)
                 cursor.execute(sql)
                 success_count += 1
             except pymysql.err.IntegrityError:
