@@ -135,9 +135,10 @@ count = 0
 success_count = 0
 batch = 10000
 priority = 6
-data_path = '/home/forge/email_list_extract/regular/net/'
+data_path = '/home/forge/email_list_extract/regular/com/'
 with connection.cursor() as cursor:
     for fn in os.listdir(data_path):
+        print fn
         if not fn.endswith('.csv'):
             continue
         file_path = os.path.join(data_path, fn)
