@@ -135,38 +135,43 @@ count = 0
 success_count = 0
 batch = 10000
 priority = 6
-data_path = '/home/forge/email_list_extract/regular/com/'
+data_path = '/home/forge/email_list_extract/regular/'
+
 with connection.cursor() as cursor:
-    for fn in os.listdir(data_path):
-        print fn
-        if not fn.endswith('.csv'):
-            continue
-        file_path = os.path.join(data_path, fn)
-        f = codecs.open(file_path, 'r', encoding='utf-8')
-        for line in f:
-            count += 1
-            if count <= 0:
+    for folder in os.listdir(data_path):
+        folder_path = os.path.join(data_path, folder)
+        print folder_path
+        for fn in os.listdir(folder_path):
+            if not fn.endswith('.csv'):
                 continue
-            emails = parse_email(line)
-            if emails:
-                for email in emails:
-                    table_name = get_table_name(email)
-                    try:
-                        sql = "INSERT INTO `{0}` VALUE (0, '{1}','', 0, '', '', '' ,0, {2})".format(table_name, email,
-                                                                                                    priority)
-                        cursor.execute(sql)
-                        success_count += 1
-                    except pymysql.err.IntegrityError:
-                        pass
-                    except pymysql.err.ProgrammingError:
-                        pass
-                    except Exception, e:
-                        print e
-                        pass
-            if count % batch == 0:
-                connection.commit()
-                print '{0} commit success , count : {1} , insert : {2}'.format(datetime.now(), count, success_count)
-                connection.begin()
+            file_path = os.path.join(folder_path, fn)
+            print file_path
+            f = codecs.open(file_path, 'r', encoding='utf-8')
+            for line in f:
+                count += 1
+                if count <= 0:
+                    continue
+                emails = parse_email(line)
+                if emails:
+                    for email in emails:
+                        table_name = get_table_name(email)
+                        try:
+                            sql = "INSERT INTO `{0}` VALUE (0, '{1}','', 0, '', '', '' ,0, {2})".format(table_name,
+                                                                                                        email,
+                                                                                                        priority)
+                            cursor.execute(sql)
+                            success_count += 1
+                        except pymysql.err.IntegrityError:
+                            pass
+                        except pymysql.err.ProgrammingError:
+                            pass
+                        except Exception, e:
+                            print e
+                            pass
+                if count % batch == 0:
+                    connection.commit()
+                    print '{0} commit success , count : {1} , insert : {2}'.format(datetime.now(), count, success_count)
+                    connection.begin()
 connection.commit()
 connection.close()
 print '{0} commit success , count : {1}, insert : {2}'.format(datetime.now(), count, success_count)
