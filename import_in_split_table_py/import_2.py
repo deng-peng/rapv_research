@@ -73,10 +73,10 @@ def clean_name_string(s):
 def update_exist_email(table_name, email, profile_url):
     try:
         with connection.cursor() as cursor:
-            print '### update {}, {}'.format(email, profile_url)
+            # print '### update {}, {}'.format(email, profile_url)
             cursor.execute('select * from {0} where email = "{1}"'.format(table_name, email))
             row = cursor.fetchone()
-            print row
+            # print row
             update_sql = False
             if row['status'] == 201 or row['status'] == 403:
                 update_sql = 'update {0} set status = 200 , message = "mockup" ,profile_url = "{1}" ' \
@@ -93,76 +93,85 @@ def update_exist_email(table_name, email, profile_url):
         return 0
 
 
-file_path = '/home/forge/linkedin/linkedin/people/2016-01/ds_dump_AU_1.jl'
+file_path_list = [
+    '/home/forge/linkedin/linkedin/people/2016-01/ds_dump_AU_3.jl',
+    '/home/forge/linkedin/linkedin/people/2016-01/ds_dump_AU_4.jl',
+    '/home/forge/linkedin/linkedin/people/2016-01/ds_dump_AU_5.jl',
+    '/home/forge/linkedin/linkedin/people/2016-01/ds_dump_AU_6.jl',
+    '/home/forge/linkedin/linkedin/people/2016-01/ds_dump_AU_7.jl',
+    '/home/forge/linkedin/linkedin/people/2016-01/ds_dump_AU_8.jl'
+]
+file_path = '/home/forge/linkedin/linkedin/people/2016-01/'
 with connection.cursor() as cur:
-    f = codecs.open(file_path, 'r', encoding='utf-8')
-    for line in f:
-        people_count += 1
-        # if people_count > 1500:
-        #     break
-        try:
-            js = json.loads(line)
-            if 'experience' not in js:
-                continue
-            profile_url = get_profile_url(js['url'])
-            if not profile_url:
-                continue
-            first_name = clean_name_string(js['given_name'].strip().lower())
-            last_name = clean_name_string(js['family_name'].strip().lower())
-            ids = set([])
-            for exp in js['experience']:
-                if 'organization' not in exp:
+    for file_path in file_path_list:
+        print file_path
+        f = codecs.open(file_path, 'r', encoding='utf-8')
+        for line in f:
+            people_count += 1
+            # if people_count > 1500:
+            #     break
+            try:
+                js = json.loads(line)
+                if 'experience' not in js:
                     continue
-                for org in exp['organization']:
-                    if 'profile_url' in org:
-                        identifie = get_company_url_identifie(org['profile_url'])
-                        ids.add(identifie)
-            if len(ids) > 0:
-                sql = build_sql_from_identifies(ids)
-                with cnt_company.cursor() as cursor:
-                    cursor.execute(sql)
-                    comps = cursor.fetchall()
-                    insert_emails = []
-                    for comp in comps:
-                        domain = comp['website'].strip().lower()
-                        if domain == '':
-                            continue
-                        insert_emails.append('{}{}@{}'.format(first_name, last_name, domain))
-                        insert_emails.append('{}.{}@{}'.format(first_name, last_name, domain))
-                        if comp['size'] == '1-10 employees' or comp['size'] == 'Myself Only':
-                            insert_emails.append('{}@{}'.format(first_name, domain))
-                    if len(insert_emails) > 0:
-                        for email in insert_emails:
-                            email_count += 1
-                            if not is_email_valid(email):
+                profile_url = get_profile_url(js['url'])
+                if not profile_url:
+                    continue
+                first_name = clean_name_string(js['given_name'].strip().lower())
+                last_name = clean_name_string(js['family_name'].strip().lower())
+                ids = set([])
+                for exp in js['experience']:
+                    if 'organization' not in exp:
+                        continue
+                    for org in exp['organization']:
+                        if 'profile_url' in org:
+                            identifie = get_company_url_identifie(org['profile_url'])
+                            ids.add(identifie)
+                if len(ids) > 0:
+                    sql = build_sql_from_identifies(ids)
+                    with cnt_company.cursor() as cursor:
+                        cursor.execute(sql)
+                        comps = cursor.fetchall()
+                        insert_emails = []
+                        for comp in comps:
+                            domain = comp['website'].strip().lower()
+                            if domain == '':
                                 continue
-                            table_name = get_table_name(email)
-                            try:
-                                si = "INSERT INTO `{0}` VALUE (0, '{1}','', 0, 'mockup', '{2}', '' ,0, {3})".format(
-                                    table_name, email, profile_url, priority)
-                                # print si
-                                cur.execute(si)
-                                insert_count += 1
-                            except pymysql.err.IntegrityError, ei:
-                                # print ei
-                                update_count += update_exist_email(table_name, email, profile_url)
-                            except pymysql.err.ProgrammingError, ep:
-                                # print ep
-                                pass
-                            except Exception, e:
-                                print e
-                    if people_count % batch == 0:
-                        connection.commit()
-                        print '{0} commit success , people : {1} , emails : {2} , insert : {3} , update : {4}'.format(
-                            datetime.now(),
-                            people_count,
-                            email_count,
-                            insert_count,
-                            update_count)
-                        connection.begin()
-        except Exception:
-            pass
-        print '------------------------------'
+                            insert_emails.append('{}{}@{}'.format(first_name, last_name, domain))
+                            insert_emails.append('{}.{}@{}'.format(first_name, last_name, domain))
+                            if comp['size'] == '1-10 employees' or comp['size'] == 'Myself Only':
+                                insert_emails.append('{}@{}'.format(first_name, domain))
+                        if len(insert_emails) > 0:
+                            for email in insert_emails:
+                                email_count += 1
+                                if not is_email_valid(email):
+                                    continue
+                                table_name = get_table_name(email)
+                                try:
+                                    si = "INSERT INTO `{0}` VALUE (0, '{1}','', 0, 'mockup', '{2}', '' ,0, {3})".format(
+                                        table_name, email, profile_url, priority)
+                                    # print si
+                                    cur.execute(si)
+                                    insert_count += 1
+                                except pymysql.err.IntegrityError, ei:
+                                    # print ei
+                                    update_count += update_exist_email(table_name, email, profile_url)
+                                except pymysql.err.ProgrammingError, ep:
+                                    # print ep
+                                    pass
+                                except Exception, e:
+                                    print e
+                        if people_count % batch == 0:
+                            connection.commit()
+                            print '{0} commit success , people : {1} , emails : {2} , insert : {3} , update : {4}'.format(
+                                datetime.now(),
+                                people_count,
+                                email_count,
+                                insert_count,
+                                update_count)
+                            connection.begin()
+            except Exception:
+                pass
 connection.commit()
 connection.close()
 print 'finished , people : {0} , emails : {1} , insert : {2} , update : {3}'.format(people_count, email_count,
