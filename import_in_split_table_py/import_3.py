@@ -133,9 +133,8 @@ with connection.cursor() as cursor:
         if email:
             table_name = get_table_name(email)
             try:
-                sql = "INSERT INTO `{0}` VALUE (0, '{1}','', 0, '', '', '' ,0, {2})".format(table_name,
-                                                                                            email,
-                                                                                            priority)
+                sql = "INSERT INTO `{0}` VALUE (0, '{1}','', 0, '', '', '', '', '',0, {2})".format(table_name, email,
+                                                                                                   priority)
                 # print sql
                 cursor.execute(sql)
                 success_count += 1
